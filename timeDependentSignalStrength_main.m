@@ -520,39 +520,6 @@ function results = nonlinear_regression_plot(xdata, ydata, beta0, uncertainties)
     return
 end
 
-function addNoiseToFIDFile(inputFileName, outputFileName, noiseLevel)
-    % inputFileName: File name of the input FID FFTSignalSpectraForTimeBin (two-column array with x and y values)
-    % outputFileName: File name to save the FID FFTSignalSpectraForTimeBin with synthetic noise (two-column array with x and y values)
-    % noiseLevel: Noise level parameter (0 for no noise, higher values for more noise)
-
-    % Check if the noiseLevel is valid
-    if ~isnumeric(noiseLevel) || noiseLevel < 0
-        error('Noise level must be a non-negative scalar.');
-    end
-
-    % Load the FID FFTSignalSpectraForTimeBin from the input file
-    FFTSignalSpectraForTimeBin = load(inputFileName);
-
-    % Extract the y-values (FID FFTSignalSpectraForTimeBin) from the second column of the array
-    FID = FFTSignalSpectraForTimeBin(:, 2);
-
-    % Calculate the standard deviation of the noise based on the noiseLevel
-    % A noise level of 1 means the noise will have a standard deviation equal to the standard deviation of the FID.
-    noiseStdDev = noiseLevel * std(real(FID));
-
-    % Generate random Gaussian noise for the real part of the FID
-    noiseReal = noiseStdDev * randn(size(FID));
-
-    % Add noise to the FID
-    noisyFID = FID + noiseReal;
-
-    % Replace the y-values in the FFTSignalSpectraForTimeBin with the noisy FID
-    FFTSignalSpectraForTimeBin(:, 2) = noisyFID;
-
-    % Save the FFTSignalSpectraForTimeBin with noisy FID to the output file
-    save(outputFileName, 'FFTSignalSpectraForTimeBin', '-ascii');
-end
-
 %this function acts to, given an array of riemann sums across multiple timebins, average them 
 function output_array = computeAverageFFTAcrossTimeBins(input_array)
     % Initialize the maxSignalStrengthArray array to store the sum of elements
